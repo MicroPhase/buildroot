@@ -4,12 +4,13 @@
 #
 ################################################################################
 
-#LIBIIO_VERSION = 0.21
-#LIBIIO_SITE = $(call github,analogdevicesinc,libiio,v$(LIBIIO_VERSION))
 
-LIBIIO_VERSION = fb64aca8adcaa607b482091b23b8edf10e5c1ad8
-LIBIIO_SITE = https://github.com/analogdevicesinc/libiio.git
-LIBIIO_SITE_METHOD = git
+LIBIIO_VERSION = 0.24
+LIBIIO_SITE = $(call github,analogdevicesinc,libiio,v$(LIBIIO_VERSION))
+
+#LIBIIO_VERSION = 60de6b948a04d4074d2feca46dbb64dca92ae60d
+#LIBIIO_SITE = https://github.com/analogdevicesinc/libiio.git
+#LIBIIO_SITE_METHOD = git
 
 LIBIIO_INSTALL_STAGING = YES
 LIBIIO_LICENSE = LGPL-2.1+
@@ -25,7 +26,7 @@ LIBIIO_CONF_OPTS = -DENABLE_IPV6=ON \
 	-DWITH_TESTS=$(if $(BR2_PACKAGE_LIBIIO_TESTS),ON,OFF) \
 	-DWITH_DOC=OFF
 
-	-DLIBIIO_VERSION_GIT=fb64aca \
+	-DLIBIIO_VERSION_GIT=60de6b948 \
 
 ifeq ($(BR2_PACKAGE_LIBIIO_LOCAL_BACKEND),y)
 LIBIIO_DEPENDENCIES += libini
@@ -50,6 +51,12 @@ LIBIIO_DEPENDENCIES += libserialport
 LIBIIO_CONF_OPTS += -DWITH_SERIAL_BACKEND=ON
 else
 LIBIIO_CONF_OPTS += -DWITH_SERIAL_BACKEND=OFF
+endif
+
+ifeq ($(BR2_PACKAGE_LIBIIO_HWMON_SUPPORT),y)
+LIBIIO_CONF_OPTS += -DWITH_HWMON=ON
+else
+LIBIIO_CONF_OPTS += -DWITH_HWMON=OFF
 endif
 
 ifeq ($(BR2_PACKAGE_LIBIIO_IIOD),y)
@@ -84,7 +91,6 @@ endif
 
 ifeq ($(BR2_PACKAGE_LIBIIO_BINDINGS_CSHARP),y)
 define LIBIIO_INSTALL_CSHARP_BINDINGS_TO_TARGET
-	rm $(TARGET_DIR)/usr/lib/cli/libiio-sharp-$(LIBIIO_VERSION)/libiio-sharp.dll.mdb
 	$(HOST_DIR)/bin/gacutil -root $(TARGET_DIR)/usr/lib -i \
 		$(TARGET_DIR)/usr/lib/cli/libiio-sharp-$(LIBIIO_VERSION)/libiio-sharp.dll
 endef
